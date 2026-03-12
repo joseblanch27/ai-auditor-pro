@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Auditor Pro — Automatiza tus documentos PDF</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFEF9;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --dark: #1C1A17;
+    --dark-soft: #2E2B26;
+    --text: #3D3A35;
+    --text-light: #7A7570;
+    --accent: #B85C38;
+    --accent-soft: #F0E6DF;
+    --green: #3D6B4F;
+    --green-soft: #E3EDE7;
+    --border: #E8E2D9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 20px 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(250, 247, 242, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: -0.5px;
+  }
+
+  .nav-logo span { color: var(--gold); }
+
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-light);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--dark); }
+
+  .btn-nav {
+    background: var(--dark);
+    color: var(--cream) !important;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 14px !important;
+    transition: background 0.2s !important;
+  }
+
+  .btn-nav:hover { background: var(--dark-soft) !important; color: var(--cream) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -100px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(184,92,56,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-content { max-width: 680px; position: relative; z-index: 1; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 5vw, 68px);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--dark);
+    margin-bottom: 24px;
+    letter-spacing: -2px;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text-light);
+    font-weight: 300;
+    margin-bottom: 48px;
+    max-width: 520px;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 16px; align-items: center;
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: var(--dark);
+    color: var(--cream);
+    padding: 16px 36px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none; cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary:hover {
+    background: var(--dark-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(28,26,23,0.2);
+  }
+
+  .btn-secondary {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: gap 0.2s;
+  }
+
+  .btn-secondary:hover { gap: 12px; }
+
+  .hero-price {
+    margin-top: 48px;
+    padding: 20px 28px;
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: inline-flex; align-items: center; gap: 20px;
+    animation: fadeUp 0.6s ease 0.4s both;
+  }
+
+  .price-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1;
+  }
+
+  .price-big span { font-size: 16px; color: var(--text-light); font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
+  .price-desc { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+  .price-desc strong { color: var(--text); font-weight: 600; }
+
+  /* STATS */
+  .stats {
+    padding: 60px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat {
+    background: var(--cream);
+    padding: 40px 48px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-num em { color: var(--gold); font-style: normal; }
+
+  .stat-label {
+    font-size: 14px;
+    color: var(--text-light);
+    font-weight: 400;
+  }
+
+  /* HOW IT WORKS */
+  .section {
+    padding: 100px 60px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 3vw, 48px);
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 64px;
+    max-width: 500px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+  }
+
+  .step {
+    position: relative;
+    padding: 40px;
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    transition: all 0.3s;
+  }
+
+  .step:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 48px rgba(28,26,23,0.08);
+    border-color: var(--gold-light);
+  }
+
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+
+  .step h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 12px;
+  }
+
+  .step p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-light);
+  }
+
+  /* PRICING */
+  .pricing-section {
+    padding: 100px 60px;
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pricing-section::before {
+    content: '';
+    position: absolute; top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .pricing-section .section-label { color: var(--gold); }
+
+  .pricing-section .section-title {
+    color: var(--cream);
+    margin-bottom: 24px;
+  }
+
+  .pricing-desc {
+    font-size: 16px;
+    color: rgba(250,247,242,0.5);
+    margin-bottom: 64px;
+    max-width: 480px;
+    line-height: 1.7;
+  }
+
+  .pricing-card {
+    background: rgba(250,247,242,0.06);
+    border: 1px solid rgba(250,247,242,0.12);
+    border-radius: 20px;
+    padding: 56px;
+    max-width: 520px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pricing-input-label {
+    font-size: 13px;
+    color: rgba(250,247,242,0.5);
+    margin-bottom: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .pricing-input-row {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .pdf-input {
+    background: rgba(250,247,242,0.08);
+    border: 1px solid rgba(250,247,242,0.15);
+    color: var(--cream);
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    width: 140px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .pdf-input:focus { border-color: var(--gold); }
+
+  .pdf-input-unit {
+    font-size: 15px;
+    color: rgba(250,247,242,0.4);
+    font-weight: 400;
+  }
+
+  .pricing-result {
+    padding: 24px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 12px;
+    margin-bottom: 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .pricing-result-label {
+    font-size: 13px;
+    color: rgba(250,247,242,0.5);
+  }
+
+  .pricing-result-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .pricing-min {
+    font-size: 12px;
+    color: rgba(250,247,242,0.3);
+    margin-bottom: 32px;
+  }
+
+  .btn-gold {
+    width: 100%;
+    background: var(--gold);
+    color: var(--dark);
+    padding: 18px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+  }
+
+  .btn-gold:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(201,168,76,0.3);
+  }
+
+  /* FEATURES */
+  .features {
+    padding: 100px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .features-list { display: flex; flex-direction: column; gap: 32px; }
+
+  .feature-item { display: flex; gap: 20px; align-items: flex-start; }
+
+  .feature-icon {
+    width: 44px; height: 44px;
+    background: var(--green-soft);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .feature-text h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+
+  .feature-text p {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  .features-visual {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+  }
+
+  .mock-header {
+    display: flex; gap: 8px; margin-bottom: 24px;
+  }
+
+  .mock-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+  }
+
+  .mock-table { width: 100%; border-collapse: collapse; }
+
+  .mock-table th {
+    background: var(--dark);
+    color: var(--cream);
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: left;
+  }
+
+  .mock-table td {
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mock-table tr:nth-child(even) td { background: var(--cream); }
+  .mock-table tr:nth-child(odd) td { background: var(--warm-white); }
+
+  .status-ok {
+    background: var(--green-soft);
+    color: var(--green);
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* FAQ */
+  .faq-section {
+    padding: 100px 60px;
+    background: var(--warm-white);
+    border-top: 1px solid var(--border);
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 900px;
+  }
+
+  .faq-item {
+    padding: 28px 32px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .faq-item h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 10px;
+  }
+
+  .faq-item p {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  /* CTA */
+  .cta-section {
+    padding: 100px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .cta-section p {
+    font-size: 17px;
+    color: var(--text-light);
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 60px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--cream);
+  }
+
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+  }
+
+  .footer-logo span { color: var(--gold); }
+
+  footer p {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 60px; }
+    .stats { grid-template-columns: 1fr; padding: 0; }
+    .section { padding: 60px 24px; }
+    .steps { grid-template-columns: 1fr; }
+    .pricing-section { padding: 60px 24px; }
+    .features { grid-template-columns: 1fr; padding: 60px 24px; }
+    .faq-section { padding: 60px 24px; }
+    .faq-grid { grid-template-columns: 1fr; }
+    .cta-section { padding: 60px 24px; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AI Auditor <span>Pro</span></div>
+  <div class="nav-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#precios">Precios</a>
+    <a href="#faq">FAQ</a>
+    <a href="#registro" class="btn-nav">Empezar gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Automatización inteligente de documentos</div>
+    <h1>Tus PDFs,<br>convertidos en <em>Excel</em><br>al instante.</h1>
+    <p class="hero-sub">Sube tus documentos PDF, elige qué datos extraer y obtén un Excel ordenado en segundos. Sin teclear. Sin errores. Sin perder el tiempo.</p>
+    <div class="hero-actions">
+      <a href="#registro" class="btn-primary">Empezar ahora →</a>
+      <a href="#como-funciona" class="btn-secondary">Ver cómo funciona <span>↓</span></a>
+    </div>
+    <div class="hero-price">
+      <div>
+        <div class="price-big">0,25€ <span>/ PDF</span></div>
+      </div>
+      <div class="price-desc">
+        <strong>Sin suscripción mensual.</strong><br>
+        Paga solo lo que uses.<br>
+        Mínimo 5€ por recarga.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat fade-in">
+    <div class="stat-num">100<em>x</em></div>
+    <div class="stat-label">Más rápido que hacerlo a mano</div>
+  </div>
+  <div class="stat fade-in">
+    <div class="stat-num">0<em>€</em></div>
+    <div class="stat-label">Coste fijo mensual</div>
+  </div>
+  <div class="stat fade-in">
+    <div class="stat-num">∞</div>
+    <div class="stat-label">Tipos de documentos compatibles</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="como-funciona">
+  <div class="section-label">Cómo funciona</div>
+  <div class="section-title">Tres pasos.<br>Resultado inmediato.</div>
+  <div class="steps">
+    <div class="step fade-in">
+      <div class="step-num">01</div>
+      <h3>Sube tus PDFs</h3>
+      <p>Selecciona uno o varios documentos PDF desde tu ordenador. Facturas, contratos, recibos — cualquier tipo de documento.</p>
+    </div>
+    <div class="step fade-in">
+      <div class="step-num">02</div>
+      <h3>Elige los datos</h3>
+      <p>Indica qué campos quieres extraer: importe, fecha, NIF, nombre, vencimiento… lo que necesites, en el orden que prefieras.</p>
+    </div>
+    <div class="step fade-in">
+      <div class="step-num">03</div>
+      <h3>Descarga tu Excel</h3>
+      <p>En segundos tienes un Excel perfectamente ordenado con todos los datos extraídos. Listo para usar sin tocar nada a mano.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="precios">
+  <div class="section-label">Precios</div>
+  <div class="section-title" style="max-width:100%">Sin sorpresas.<br>Sin mensualidades.</div>
+  <p class="pricing-desc">Paga exactamente por los PDFs que necesitas procesar. Recarga cuando quieras, sin compromisos.</p>
+
+  <div class="pricing-card fade-in">
+    <div class="pricing-input-label">¿Cuántos PDFs necesitas procesar?</div>
+    <div class="pricing-input-row">
+      <input type="number" class="pdf-input" id="pdfCount" value="100" min="20" oninput="calcPrecio()">
+      <span class="pdf-input-unit">documentos PDF</span>
+    </div>
+    <div class="pricing-result">
+      <div class="pricing-result-label">Total a pagar</div>
+      <div class="pricing-result-price" id="precioTotal">25,00 €</div>
+    </div>
+    <p class="pricing-min">Mínimo 20 PDFs por recarga (5,00 €) · 0,25 € por PDF</p>
+    <a href="#registro" class="btn-gold">Empezar con esta recarga →</a>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="caracteristicas">
+  <div class="fade-in">
+    <div class="section-label">Por qué AI Auditor Pro</div>
+    <div class="section-title" style="margin-bottom: 48px;">Diseñado para profesionales que valoran su tiempo.</div>
+    <div class="features-list">
+      <div class="feature-item fade-in">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-text">
+          <h4>Tus documentos, completamente privados</h4>
+          <p>Ningún documento se almacena ni se comparte. Todo se procesa de forma segura y confidencial.</p>
+        </div>
+      </div>
+      <div class="feature-item fade-in">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-text">
+          <h4>Resultados en segundos</h4>
+          <p>Lo que antes llevaba horas de trabajo manual, ahora está listo al instante.</p>
+        </div>
+      </div>
+      <div class="feature-item fade-in">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-text">
+          <h4>Extrae exactamente lo que necesitas</h4>
+          <p>Tú decides qué campos extraer. El programa se adapta a tus documentos, no al revés.</p>
+        </div>
+      </div>
+      <div class="feature-item fade-in">
+        <div class="feature-icon">📊</div>
+        <div class="feature-text">
+          <h4>Excel listo para usar</h4>
+          <p>Datos perfectamente organizados en columnas. Listos para importar a cualquier programa.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="features-visual fade-in">
+    <div class="mock-header">
+      <div class="mock-dot" style="background:#ff5f57"></div>
+      <div class="mock-dot" style="background:#febc2e"></div>
+      <div class="mock-dot" style="background:#28c840"></div>
+    </div>
+    <table class="mock-table">
+      <thead>
+        <tr>
+          <th>ESTADO</th>
+          <th>ARCHIVO</th>
+          <th>IMPORTE</th>
+          <th>FECHA</th>
+          <th>NIF</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="status-ok">✓ OK</span></td><td>factura_001.pdf</td><td>1.250,00 €</td><td>01/03/2026</td><td>B-28456789</td></tr>
+        <tr><td><span class="status-ok">✓ OK</span></td><td>factura_002.pdf</td><td>890,50 €</td><td>03/03/2026</td><td>A-45123678</td></tr>
+        <tr><td><span class="status-ok">✓ OK</span></td><td>factura_003.pdf</td><td>2.340,00 €</td><td>05/03/2026</td><td>B-33456789</td></tr>
+        <tr><td><span class="status-ok">✓ OK</span></td><td>factura_004.pdf</td><td>675,25 €</td><td>07/03/2026</td><td>B-48234567</td></tr>
+        <tr><td><span class="status-ok">✓ OK</span></td><td>factura_005.pdf</td><td>1.890,00 €</td><td>10/03/2026</td><td>A-28765432</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="section-label">Preguntas frecuentes</div>
+  <div class="section-title">Todo lo que necesitas saber.</div>
+  <div class="faq-grid">
+    <div class="faq-item fade-in">
+      <h4>¿Qué tipos de PDF acepta?</h4>
+      <p>Cualquier PDF con texto — facturas, contratos, recibos, nóminas, informes. Si tiene texto, lo procesa.</p>
+    </div>
+    <div class="faq-item fade-in">
+      <h4>¿Cuándo caducan mis créditos?</h4>
+      <p>Nunca. Los créditos que compras no caducan. Úsalos cuando los necesites.</p>
+    </div>
+    <div class="faq-item fade-in">
+      <h4>¿Es seguro subir mis documentos?</h4>
+      <p>Sí. Ningún documento se almacena en nuestros servidores. Se procesa y se elimina al instante.</p>
+    </div>
+    <div class="faq-item fade-in">
+      <h4>¿Puedo procesar varios PDFs a la vez?</h4>
+      <p>Sí, puedes seleccionar todos los PDFs que quieras de una vez. Se procesan en segundos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="registro">
+  <h2>Empieza a ahorrar<br>tiempo hoy mismo.</h2>
+  <p>Sin suscripción. Sin compromisos. Solo resultados.</p>
+  <a href="#registro" class="btn-primary" style="font-size:16px; padding: 18px 48px;">Crear cuenta gratis →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">AI Auditor <span>Pro</span></div>
+  <p>© 2026 AI Auditor Pro · Todos los derechos reservados</p>
+</footer>
+
+<script>
+  // Precio calculadora
+  function calcPrecio() {
+    var n = parseInt(document.getElementById('pdfCount').value) || 0;
+    if (n < 20) n = 20;
+    var total = (n * 0.25).toFixed(2).replace('.', ',');
+    document.getElementById('precioTotal').textContent = total + ' €';
+  }
+
+  // Scroll animations
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(function(el) {
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
